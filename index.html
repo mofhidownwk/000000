@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今天吃什麼？抽籤器</title>
+  <style>
+    :root {
+      --page-bg: #f3f6fb;
+      --card-bg: #ffffff;
+      --primary: #4776e6;
+      --text: #243047;
+      --muted: #68758a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Microsoft JhengHei", sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      padding: 30px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 12px 36px rgba(35, 55, 90, 0.10);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 30px;
+    }
+
+    .intro {
+      margin-bottom: 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 170px;
+      padding: 14px;
+      resize: vertical;
+      border: 1px solid #dce3ee;
+      border-radius: 12px;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .hint {
+      margin: 8px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #345fc4;
+    }
+
+    .result-area {
+      margin-top: 22px;
+      padding: 22px 16px;
+      min-height: 128px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border: 1px dashed #b8c9ed;
+      border-radius: 14px;
+      background: #eef4ff;
+    }
+
+    .result-title {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    #result {
+      color: var(--primary);
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    #message {
+      min-height: 22px;
+      margin-top: 10px;
+      color: #c04444;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+    <h1>今天吃什麼？</h1>
+    <p class="intro">
+      把想吃的選項列出來，剩下的交給抽籤器！
+    </p>
+
+    <label for="options">餐點清單（每行一個選項）</label>
+
+    <textarea id="options">便當
+麵
+咖哩
+水餃</textarea>
+
+    <p class="hint">
+      抽籤時會自動忽略空白行，並合併完全相同的重複選項。
+    </p>
+
+    <button id="drawButton" type="button">
+      幫我選
+    </button>
+
+    <section class="result-area" aria-live="polite">
+      <div class="result-title">
+        今天就決定吃這個！
+      </div>
+
+      <div id="result">等你來抽籤</div>
+      <div id="message"></div>
+    </section>
+  </main>
+
+  <script>
+    // 取得頁面元素
+    const optionsInput = document.getElementById("options");
+    const drawButton = document.getElementById("drawButton");
+    const resultDisplay = document.getElementById("result");
+    const messageDisplay = document.getElementById("message");
+
+    // 整理選項：去除空白及重複內容
+    function getValidOptions() {
+      const lines = optionsInput.value.split(/\r?\n/);
+
+      const cleanedOptions = lines
+        .map(option => option.trim())
+        .filter(option => option !== "");
+
+      // Set 自動移除完全相同的重複選項
+      return [...new Set(cleanedOptions)];
+    }
+
+    // 隨機抽出一個選項
+    function drawOption() {
+      const options = getValidOptions();
+
+      // 檢查清單是否為空
+      if (options.length === 0) {
+        resultDisplay.textContent = "尚未抽出";
+        messageDisplay.textContent =
+          "請先輸入至少一個選項";
+        return;
+      }
+
+      // 每個有效選項都有相同的抽中機率
+      const randomIndex = Math.floor(
+        Math.random() * options.length
+      );
+
+      resultDisplay.textContent = options[randomIndex];
+      messageDisplay.textContent = "";
+    }
+
+    // 按下按鈕時執行抽籤
+    drawButton.addEventListener("click", drawOption);
+  </script>
+
+</body>
+</html>
